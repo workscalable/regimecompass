@@ -19,7 +19,11 @@
     "db:postgres": "node scripts/setup-postgresql.js setup",
     "db:postgres:status": "node scripts/setup-postgresql.js status",
     "security:setup": "node scripts/setup-security.js",
-    "security:audit": "node scripts/security-audit.js"
+    "security:audit": "node scripts/security-audit.js",
+    "fly:deploy": "node scripts/deploy-fly.js deploy",
+    "fly:secrets": "node scripts/deploy-fly.js secrets",
+    "fly:status": "node scripts/deploy-fly.js status",
+    "fly:logs": "node scripts/deploy-fly.js logs"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.7",
