@@ -1,4 +1,4 @@
-# Fly.io configuration for Regime Compass
+# Fly.io configuration for RegimeCompass Next.js App
 
 app = "regimecompass"
 primary_region = "ord"
@@ -30,44 +30,13 @@ primary_region = "ord"
   cpu_kind = "shared"
   cpus = 2
 
-[[services]]
-  protocol = "tcp"
-  internal_port = 3000
-  processes = ["app"]
-
-  [[services.ports]]
-    port = 80
-    handlers = ["http"]
-    force_https = true
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
-  [services.concurrency]
-    type = "connections"
-    hard_limit = 1000
-    soft_limit = 800
-
-# Database configuration
-[[services]]
-  protocol = "tcp"
-  internal_port = 5432
-  processes = ["db"]
-
-# Redis configuration (optional)
-[[services]]
-  protocol = "tcp"
-  internal_port = 6379
-  processes = ["redis"]
-
 # Volume for persistent data
 [[mounts]]
   source = "regimecompass_data"
   destination = "/app/data"
 
 # Environment variables (set via fly secrets)
-# fly secrets set DATABASE_URL="postgresql://..."
-# fly secrets set POLYGON_API_KEY="..."
-# fly secrets set TRADIER_API_KEY="..."
+# fly secrets set POSTGRES_HOST="..."
+# fly secrets set POSTGRES_PASSWORD="..."
 # fly secrets set JWT_SECRET="..."
+# fly secrets set ENCRYPTION_KEY="..."

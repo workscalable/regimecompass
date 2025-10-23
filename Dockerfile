@@ -1,64 +1,64 @@
-# RegimeCompass Production Dockerfile
-# Multi-stage build for optimized production image
+# RegimeCompass Next.js Production Dockerfile
+# Optimized for Fly.io deployment
 
-# Stage 1: Build stage
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS base
 
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY tsconfig*.json ./
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy source code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Stage 2: Production stage
-FROM node:18-alpine AS production
-
-# Create app user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S regimecompass -u 1001
-
-# Set working directory
+# Production image, copy all the files and run next
+FROM base AS runner
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+ENV NODE_ENV production
 
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-# Copy built application from builder stage
-COPY --from=builder /app/.next ./.next
+# Copy the built application
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/gamma-services ./gamma-services
-COPY --from=builder /app/database ./database
-COPY --from=builder /app/scripts ./scripts
 
-# Copy configuration files
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/tsconfig.json ./
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy gamma-services and database files
+COPY --from=builder --chown=nextjs:nodejs /app/gamma-services ./gamma-services
+COPY --from=builder --chown=nextjs:nodejs /app/database ./database
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
 # Create logs directory
-RUN mkdir -p /app/logs && chown -R regimecompass:nodejs /app
+RUN mkdir -p /app/logs && chown nextjs:nodejs /app/logs
 
-# Switch to non-root user
-USER regimecompass
+USER nextjs
 
-# Expose port
 EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

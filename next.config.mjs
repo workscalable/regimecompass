@@ -3,6 +3,8 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  // Enable standalone output for Fly.io deployment
+  output: 'standalone',
   env: {
     POLYGON_API_KEY: process.env.POLYGON_API_KEY,
     TWELVEDATA_API_KEY: process.env.TWELVEDATA_API_KEY,
