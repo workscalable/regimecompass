@@ -26,6 +26,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { TradingApi, PaperTradingApi, AnalyticsApi, HealthApi, useRealtimeData } from '@/lib/api';
 
 // Main Dashboard Component
 export default function TradingDashboard() {
@@ -33,7 +34,13 @@ export default function TradingDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('1m');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Mock data - replace with real API calls
+  // Real-time data hooks
+  const { data: systemHealth, loading: healthLoading } = useRealtimeData('/trading/health', 5000);
+  const { data: positions, loading: positionsLoading } = useRealtimeData('/paper/positions', 3000);
+  const { data: performance, loading: performanceLoading } = useRealtimeData('/paper/performance', 10000);
+  const { data: signals, loading: signalsLoading } = useRealtimeData('/paper/signals', 2000);
+
+  // Mock data - fallback when API is not available
   const [marketData, setMarketData] = useState({
     regime: 'BULL',
     confidence: 0.87,
@@ -148,22 +155,80 @@ export default function TradingDashboard() {
     lastUpdate: new Date().toISOString()
   });
 
-  // Auto-refresh data
+  // Real-time data integration
   useEffect(() => {
-    if (isLive) {
-      const interval = setInterval(() => {
-        // Simulate real-time updates
-        setMarketData(prev => ({
-          ...prev,
-          confidence: Math.max(0.5, Math.min(1.0, prev.confidence + (Math.random() - 0.5) * 0.1)),
-          vix: Math.max(10, Math.min(40, prev.vix + (Math.random() - 0.5) * 2)),
-          breadth: Math.max(0.3, Math.min(0.9, prev.breadth + (Math.random() - 0.5) * 0.1))
-        }));
-      }, 2000);
+    const fetchRealData = async () => {
+      try {
+        // Fetch system health
+        const healthResponse = await HealthApi.getSystemHealth();
+        if (healthResponse.success && healthResponse.data) {
+          setSystemHealth(prev => ({
+            ...prev,
+            ...healthResponse.data
+          }));
+        }
 
+        // Fetch positions
+        const positionsResponse = await PaperTradingApi.getPositions();
+        if (positionsResponse.success && positionsResponse.data) {
+          setPositions(positionsResponse.data);
+        }
+
+        // Fetch performance
+        const performanceResponse = await AnalyticsApi.getPerformanceMetrics();
+        if (performanceResponse.success && performanceResponse.data) {
+          setPerformance(prev => ({
+            ...prev,
+            ...performanceResponse.data
+          }));
+        }
+
+        // Fetch signals
+        const signalsResponse = await PaperTradingApi.getSignals();
+        if (signalsResponse.success && signalsResponse.data) {
+          setSignals(signalsResponse.data);
+        }
+
+      } catch (error) {
+        console.error('Error fetching real-time data:', error);
+      }
+    };
+
+    if (isLive) {
+      fetchRealData();
+      const interval = setInterval(fetchRealData, 5000);
       return () => clearInterval(interval);
     }
   }, [isLive]);
+
+  // Trading control functions
+  const handleStartTrading = async () => {
+    try {
+      const response = await TradingApi.startTrading();
+      if (response.success) {
+        setIsLive(true);
+        toast.success('Trading system started');
+      } else {
+        toast.error(response.error || 'Failed to start trading');
+      }
+    } catch (error) {
+      toast.error('Failed to start trading system');
+    }
+  };
+
+  const handleStopTrading = async () => {
+    try {
+      const response = await TradingApi.stopTrading();
+      if (response.success) {
+        setIsLive(false);
+        toast.success('Trading system stopped');
+      } else {
+        toast.error(response.error || 'Failed to stop trading');
+      }
+    } catch (error) {
+      toast.error('Failed to stop trading system');
+    }
+  };
 
   const getRegimeColor = (regime: string) => {
     switch (regime) {
@@ -219,11 +284,11 @@ export default function TradingDashboard() {
               <Button
                 variant={isLive ? "destructive" : "default"}
                 size="sm"
-                onClick={() => setIsLive(!isLive)}
+                onClick={isLive ? handleStopTrading : handleStartTrading}
                 className="flex items-center space-x-2"
               >
                 {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                <span>{isLive ? 'Pause' : 'Start'}</span>
+                <span>{isLive ? 'Stop' : 'Start'}</span>
               </Button>
               
               <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
