@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: regimecompass
+  labels:
+    name: regimecompass
+    app: regimecompass
+    environment: production

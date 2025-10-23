@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gamma-adaptive
+  labels:
+    name: gamma-adaptive
+    environment: production
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: gamma-adaptive-quota
+  namespace: gamma-adaptive
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi
+    persistentvolumeclaims: "10"
+    services: "10"
+    secrets: "20"
+    configmaps: "20"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: gamma-adaptive-limits
+  namespace: gamma-adaptive
+spec:
+  limits:
+  - default:
+      cpu: "1"
+      memory: "2Gi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "256Mi"
+    type: Container

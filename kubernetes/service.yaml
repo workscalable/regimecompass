@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: regimecompass-service
+  namespace: regimecompass
+  labels:
+    app: regimecompass
+    component: app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: regimecompass
+    component: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: regimecompass-metrics
+  namespace: regimecompass
+  labels:
+    app: regimecompass
+    component: metrics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: regimecompass
+    component: app

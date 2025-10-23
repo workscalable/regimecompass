@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Custom regime indicator styles */
+.regime-bull {
+  @apply text-green-400 bg-green-900/20 border border-green-500/30;
+}
+
+.regime-bear {
+  @apply text-red-400 bg-red-900/20 border border-red-500/30;
+}
+
+.regime-neutral {
+  @apply text-yellow-400 bg-yellow-900/20 border border-yellow-500/30;
+}
+
+/* Heatmap styles */
+.heatmap-cell {
+  @apply transition-all duration-200 hover:scale-105 cursor-pointer;
+}
+
+.heatmap-strong {
+  @apply bg-green-600 text-white;
+}
+
+.heatmap-weak {
+  @apply bg-red-600 text-white;
+}
+
+.heatmap-neutral {
+  @apply bg-gray-600 text-white;
+}
+
+/* Loading animations */
+.pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Trading signal styles */
+.signal-buy {
+  @apply bg-green-100 text-green-800 border border-green-300;
+}
+
+.signal-sell {
+  @apply bg-red-100 text-red-800 border border-red-300;
+}
+
+.signal-hold {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-300;
+}
+
+/* Dark mode overrides for signals */
+.dark .signal-buy {
+  @apply bg-green-900/30 text-green-300 border-green-600/30;
+}
+
+.dark .signal-sell {
+  @apply bg-red-900/30 text-red-300 border-red-600/30;
+}
+
+.dark .signal-hold {
+  @apply bg-yellow-900/30 text-yellow-300 border-yellow-600/30;
+}

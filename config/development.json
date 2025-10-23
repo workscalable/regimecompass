@@ -1,0 +1,72 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "paper_trading_dev",
+    "username": "postgres",
+    "password": "password",
+    "ssl": false,
+    "connectionTimeout": 30000,
+    "maxConnections": 5,
+    "retryAttempts": 3
+  },
+  "trading": {
+    "defaultAccountBalance": 50000,
+    "maxPositionsPerAccount": 20,
+    "maxRiskPerTrade": 0.05,
+    "maxPortfolioHeat": 0.30,
+    "maxDrawdown": 0.15
+  },
+  "monitoring": {
+    "healthCheckInterval": 10000,
+    "metricsRetentionDays": 7,
+    "alertCooldownMs": 60000,
+    "performanceThresholds": {
+      "tradeExecution": 1000,
+      "positionUpdate": 200,
+      "optionsChainFetch": 3000,
+      "pnlCalculation": 100,
+      "riskCheck": 200
+    }
+  },
+  "logging": {
+    "level": "DEBUG",
+    "outputs": {
+      "console": {
+        "enabled": true,
+        "colorize": true
+      },
+      "file": {
+        "enabled": true,
+        "path": "./logs/dev-paper-trading.log",
+        "maxSize": "5MB",
+        "maxFiles": 3,
+        "rotateDaily": false
+      },
+      "remote": {
+        "enabled": false
+      }
+    },
+    "auditRetentionDays": 30
+  },
+  "alerting": {
+    "channels": {
+      "email": {
+        "enabled": false
+      },
+      "slack": {
+        "enabled": false
+      },
+      "webhook": {
+        "enabled": false
+      }
+    }
+  },
+  "features": {
+    "syntheticPricing": true,
+    "multiTickerSupport": true,
+    "learningEngine": true,
+    "performanceAnalytics": true,
+    "riskManagement": false
+  }
+}

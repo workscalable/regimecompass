@@ -1,0 +1,106 @@
+{
+  "database": {
+    "host": "${DB_HOST}",
+    "port": "${DB_PORT}",
+    "database": "${DB_NAME}",
+    "username": "${DB_USER}",
+    "password": "${DB_PASSWORD}",
+    "ssl": true,
+    "connectionTimeout": 30000,
+    "maxConnections": 20,
+    "retryAttempts": 5
+  },
+  "trading": {
+    "defaultAccountBalance": 100000,
+    "maxPositionsPerAccount": 100,
+    "maxRiskPerTrade": 0.01,
+    "maxPortfolioHeat": 0.15,
+    "maxDrawdown": 0.08,
+    "maxConsecutiveLosses": 2
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "metricsRetentionDays": 90,
+    "alertCooldownMs": 300000,
+    "performanceThresholds": {
+      "tradeExecution": 300,
+      "positionUpdate": 50,
+      "optionsChainFetch": 1500,
+      "pnlCalculation": 25,
+      "riskCheck": 50
+    },
+    "circuitBreaker": {
+      "failureThreshold": 3,
+      "timeoutMs": 120000,
+      "monitoringWindowMs": 600000
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "outputs": {
+      "console": {
+        "enabled": false,
+        "colorize": false
+      },
+      "file": {
+        "enabled": true,
+        "path": "/var/log/paper-trading/app.log",
+        "maxSize": "50MB",
+        "maxFiles": 10,
+        "rotateDaily": true
+      },
+      "remote": {
+        "enabled": true,
+        "endpoint": "${LOG_ENDPOINT}",
+        "apiKey": "${LOG_API_KEY}",
+        "batchSize": 500,
+        "flushInterval": 5000
+      }
+    },
+    "auditRetentionDays": 365
+  },
+  "alerting": {
+    "channels": {
+      "email": {
+        "enabled": true,
+        "smtp": {
+          "host": "${SMTP_HOST}",
+          "port": 587,
+          "secure": true,
+          "auth": {
+            "user": "${SMTP_USER}",
+            "pass": "${SMTP_PASS}"
+          }
+        },
+        "recipients": ["${ALERT_EMAIL_1}", "${ALERT_EMAIL_2}"]
+      },
+      "slack": {
+        "enabled": true,
+        "webhookUrl": "${SLACK_WEBHOOK_URL}",
+        "channel": "#production-alerts",
+        "username": "Paper Trading Production"
+      },
+      "webhook": {
+        "enabled": true,
+        "url": "${ALERT_WEBHOOK_URL}",
+        "headers": {
+          "Authorization": "Bearer ${ALERT_WEBHOOK_TOKEN}"
+        },
+        "timeout": 10000
+      }
+    },
+    "rules": {
+      "criticalErrorCooldown": 180000,
+      "highErrorRateCooldown": 300000,
+      "tradeFailureCooldown": 30000,
+      "riskViolationCooldown": 60000
+    }
+  },
+  "features": {
+    "syntheticPricing": true,
+    "multiTickerSupport": true,
+    "learningEngine": true,
+    "performanceAnalytics": true,
+    "riskManagement": true
+  }
+}

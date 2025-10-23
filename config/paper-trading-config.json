@@ -1,0 +1,136 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "paper_trading",
+    "username": "postgres",
+    "password": "password",
+    "ssl": false,
+    "connectionTimeout": 30000,
+    "maxConnections": 10,
+    "retryAttempts": 3
+  },
+  "apis": {
+    "polygon": {
+      "apiKey": "${POLYGON_API_KEY}",
+      "baseUrl": "https://api.polygon.io",
+      "rateLimit": 5,
+      "timeout": 10000,
+      "retryAttempts": 3
+    },
+    "tradier": {
+      "apiKey": "${TRADIER_API_KEY}",
+      "baseUrl": "https://api.tradier.com",
+      "rateLimit": 10,
+      "timeout": 10000,
+      "retryAttempts": 3
+    }
+  },
+  "trading": {
+    "defaultAccountBalance": 100000,
+    "maxPositionsPerAccount": 50,
+    "maxRiskPerTrade": 0.02,
+    "maxPortfolioHeat": 0.20,
+    "maxDrawdown": 0.10,
+    "positionSizeMultiplier": 1.0,
+    "profitTargetMultiple": 2.0,
+    "stopLossPercent": 0.50,
+    "timeDecayThreshold": 0.10,
+    "maxConsecutiveLosses": 3,
+    "confidenceThresholds": {
+      "high": 0.8,
+      "medium": 0.6,
+      "low": 0.4
+    },
+    "expirationDays": {
+      "highConfidence": 14,
+      "mediumConfidence": 7,
+      "lowConfidence": 3
+    }
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "metricsRetentionDays": 30,
+    "alertCooldownMs": 300000,
+    "performanceThresholds": {
+      "tradeExecution": 500,
+      "positionUpdate": 100,
+      "optionsChainFetch": 2000,
+      "pnlCalculation": 50,
+      "riskCheck": 100
+    },
+    "circuitBreaker": {
+      "failureThreshold": 5,
+      "timeoutMs": 60000,
+      "monitoringWindowMs": 300000
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "outputs": {
+      "console": {
+        "enabled": true,
+        "colorize": true
+      },
+      "file": {
+        "enabled": true,
+        "path": "./logs/paper-trading.log",
+        "maxSize": "10MB",
+        "maxFiles": 5,
+        "rotateDaily": true
+      },
+      "remote": {
+        "enabled": false,
+        "endpoint": "",
+        "apiKey": "",
+        "batchSize": 100,
+        "flushInterval": 10000
+      }
+    },
+    "auditRetentionDays": 90
+  },
+  "alerting": {
+    "channels": {
+      "email": {
+        "enabled": false,
+        "smtp": {
+          "host": "${SMTP_HOST}",
+          "port": 587,
+          "secure": false,
+          "auth": {
+            "user": "${SMTP_USER}",
+            "pass": "${SMTP_PASS}"
+          }
+        },
+        "recipients": []
+      },
+      "slack": {
+        "enabled": false,
+        "webhookUrl": "${SLACK_WEBHOOK_URL}",
+        "channel": "#alerts",
+        "username": "Paper Trading Bot"
+      },
+      "webhook": {
+        "enabled": false,
+        "url": "",
+        "headers": {},
+        "timeout": 5000
+      }
+    },
+    "rules": {
+      "criticalErrorCooldown": 300000,
+      "highErrorRateCooldown": 600000,
+      "tradeFailureCooldown": 60000,
+      "riskViolationCooldown": 180000
+    }
+  },
+  "environment": "development",
+  "version": "1.0.0",
+  "features": {
+    "syntheticPricing": true,
+    "multiTickerSupport": true,
+    "learningEngine": true,
+    "performanceAnalytics": true,
+    "riskManagement": true
+  }
+}

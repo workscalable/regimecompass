@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "gamma-services/core/EventBus.ts",
+    "gamma-services/config/ConfigInitializer.ts",
+    "gamma-services/config/ConfigManager.ts",
+    "gamma-services/paper/PaperTradingEngine.ts",
+    "gamma-services/orchestrators/MultiTickerOrchestrator.ts",
+    "gamma-services/orchestrators/RealtimeOrchestrator.ts",
+    "gamma-services/gamma-adaptive/GammaAdaptiveSystem.ts",
+    "gamma-services/analytics/LearningInsightsEngine.ts",
+    "gamma-services/analytics/PerformanceAnalyticsEngine.ts",
+    "gamma-services/alerts/AlertSystem.ts",
+    "gamma-services/caching/CacheManager.ts",
+    "gamma-services/logging/Logger.ts",
+    "gamma-services/logging/AuditLogger.ts",
+    "gamma-services/monitoring/PerformanceMonitor.ts"
+  ],
+  "exclude": [
+    "**/tests/**",
+    "**/__tests__/**",
+    "**/TestUtils.ts",
+    "**/examples/**",
+    "**/docs/**"
+  ]
+}
+
