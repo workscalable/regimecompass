@@ -50,7 +50,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # PostgreSQL for local development (optional)
+  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: regimecompass-postgres
@@ -61,16 +61,19 @@ services:
       - POSTGRES_DB=regimecompass
       - POSTGRES_USER=regimecompass
       - POSTGRES_PASSWORD=regimecompass_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations
     networks:
       - regimecompass-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U regimecompass"]
+      test: ["CMD-SHELL", "pg_isready -U regimecompass -d regimecompass"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   # Nginx reverse proxy
   nginx:
